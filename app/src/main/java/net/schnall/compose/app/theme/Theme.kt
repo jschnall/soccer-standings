@@ -1,4 +1,4 @@
-package net.schnall.compose.theme
+package net.schnall.compose.app.theme
 
 import android.app.Activity
 import android.os.Build

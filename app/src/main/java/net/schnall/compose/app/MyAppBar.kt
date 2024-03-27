@@ -1,9 +1,7 @@
 package net.schnall.compose.app
 
-import android.graphics.drawable.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import net.schnall.compose.R
-import net.schnall.compose.theme.ComposeStarterTheme
+import net.schnall.compose.app.theme.ComposeStarterTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

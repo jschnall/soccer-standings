@@ -3,7 +3,6 @@ package net.schnall.compose.app
 import androidx.annotation.StringRes
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -64,7 +63,6 @@ fun NavGraphBuilder.mainGraph(
                 viewModel.loadTeams(teamId)
 
                 TeamDetailScreen(
-                    teamId = teamId,
                     uiState = uiState.value,
                     onSort = { sort -> viewModel.updateSort(sort) }
                 )

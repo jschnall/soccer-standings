@@ -21,34 +21,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.schnall.compose.R
 import net.schnall.compose.data.TeamDetailItem
-import net.schnall.compose.theme.ComposeStarterTheme
+import net.schnall.compose.app.theme.ComposeStarterTheme
 
 @Composable
 fun TeamDetailScreen(
-    teamId: String,
     uiState: TeamDetailUiState,
     onSort: (SortField) -> Unit,
 ) {
     when(uiState) {
         is TeamDetailUiState.Success -> {
-            val state = (uiState as TeamDetailUiState.Success)
-
             TeamDetails(
-                teams = state.teams,
+                teams = uiState.teams,
                 onSort = onSort,
-                sortField = state.sortField,
-                isDescending = state.isDescending
+                sortField = uiState.sortField,
+                isDescending = uiState.isDescending
             )
         }
 
         is TeamDetailUiState.Error -> {
-            with (uiState as TeamDetailUiState.Error) {
+            with (uiState) {
                 Text(text = message)
             }
         }
 
         is TeamDetailUiState.Loading -> {
-            with (uiState as TeamDetailUiState.Loading) {
+            with (uiState) {
                 if (showIndicator) {
                     MyProgress()
                 }
@@ -105,7 +102,6 @@ fun TeamDetailHeader(
 @Composable
 fun TeamDetailListItem(
     team: TeamDetailItem,
-    modifier: Modifier = Modifier
 ) {
     TeamDetailListItem(
         name = team.teamName,
@@ -123,7 +119,6 @@ fun TeamDetailListItem(
     lossesAgainst: String,
     drawsAgainst: String,
     totalGames: String,
-    modifier: Modifier = Modifier,
     bgColor: Color = Color.LightGray,
     clickable: Boolean = false,
     onClick: (SortField) -> Unit = {},

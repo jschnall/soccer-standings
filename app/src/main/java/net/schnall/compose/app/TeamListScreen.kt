@@ -24,36 +24,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.schnall.compose.R
 import net.schnall.compose.data.TeamItem
-import net.schnall.compose.theme.ComposeStarterTheme
-import org.koin.androidx.compose.koinViewModel
+import net.schnall.compose.app.theme.ComposeStarterTheme
 import java.text.DecimalFormat
 
 @Composable
 fun TeamListScreen(
     uiState: TeamListUiState,
-    viewModel: TeamListViewModel = koinViewModel(),
     onTeamClick: (String, String) -> Unit
 ) {
 
     when(uiState) {
         is TeamListUiState.Success -> {
             TeamList(
-                teams = (uiState as TeamListUiState.Success).teams,
+                teams = (uiState).teams,
                 onTeamClick = onTeamClick
             )
         }
 
         is TeamListUiState.Error -> {
-            with (uiState as TeamListUiState.Error) {
+            with (uiState) {
                 Text(text = message)
             }
         }
 
         is TeamListUiState.Loading -> {
-            with (uiState as TeamListUiState.Loading) {
+            with (uiState) {
                 if (showIndicator) {
                     MyProgress()
                 }
@@ -118,7 +115,6 @@ fun TeamListHeader() {
 @Composable
 fun TeamListItem(
     team: TeamItem,
-    modifier: Modifier = Modifier,
     decimalFormat: DecimalFormat = DecimalFormat("###.##"),
     onClick: () -> Unit
 ) {
@@ -139,7 +135,6 @@ fun TeamListItem(
     losses: String,
     draws: String,
     winPercentage: String,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     clickable: Boolean = true,
     bgColor: Color = Color.LightGray
@@ -156,35 +151,35 @@ fun TeamListItem(
                 .padding(16.dp)
                 .weight(1f),
             text = name,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
             modifier = Modifier
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = wins,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
             modifier = Modifier
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = losses,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
             modifier = Modifier
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = draws,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium
         )
         Text(
             modifier = Modifier
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 40.dp),
             text = winPercentage,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
