@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Yahoo Soccer</string>
+    <string name="please_wait">Please Wait&#8230;</string>
+    <string name="back">Back</string>
+
+    <string name="team_list">Overall Standings</string>
+    <string name="team_list_header_name">Team Name</string>
+    <string name="team_list_header_wins">W</string>
+    <string name="team_list_header_losses">L</string>
+    <string name="team_list_header_draws">D</string>
+    <string name="team_list_header_win_percent">Win %</string>
+
+    <string name="team_details">Team Details</string>
+    <string name="team_detail_header_name">Team Name</string>
+    <string name="team_detail_header_wins">W</string>
+    <string name="team_detail_header_losses">L</string>
+    <string name="team_detail_header_draws">D</string>
+    <string name="team_detail_header_total_games">T</string>
+</resources>
