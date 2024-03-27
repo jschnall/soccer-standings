@@ -2,16 +2,15 @@ package net.schnall.compose.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import net.schnall.compose.repo.GameRepo
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.schnall.compose.data.Game
 import net.schnall.compose.data.TeamDetailItem
-import net.schnall.compose.data.TeamItem
 
 class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
     private val _uiState = MutableStateFlow<TeamDetailUiState>(TeamDetailUiState.Loading(true))
@@ -20,13 +19,13 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
     private val order = Order(field = OrderField.WINS, isDescending = true)
 
     fun loadTeams(teamId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             gameRepo.fetchGames()
                 .catch { exception ->
                     _uiState.value = TeamDetailUiState.Error(message = exception.toString())
                 }
                 .collect { games ->
-                    _uiState.value = TeamDetailUiState.Success(teams = buildTeamDetailItems(games, teamId, order))
+                    _uiState.value = TeamDetailUiState.Success(teams = buildTeamDetailItems(games, teamId))
                 }
         }
     }
@@ -81,7 +80,7 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
             }
     }
 
-    private fun buildTeamDetailItems(games: List<Game>, teamId: String, order: Order): List<TeamDetailItem> {
+    private fun buildTeamDetailItems(games: List<Game>, teamId: String): List<TeamDetailItem> {
         val items = games.filter { it.awayTeamId == teamId || it.homeTeamId == teamId }
             .groupBy { if (it.awayTeamId == teamId) it.homeTeamId else it.awayTeamId }
             .map { (key, value) ->

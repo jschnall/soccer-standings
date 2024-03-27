@@ -2,14 +2,17 @@ package net.schnall.compose.app
 
 import android.app.Application
 import net.schnall.compose.app.di.appModule
+import net.schnall.compose.repo.di.repoModule
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
-class MainApplication : Application(){
+class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
         startKoin {
-            modules(appModule())
+            androidContext(androidContext = applicationContext)
+            modules(appModule(), repoModule)
         }
     }
 }

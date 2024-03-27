@@ -2,6 +2,7 @@ package net.schnall.compose.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import net.schnall.compose.repo.GameRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,7 @@ class TeamListViewModel(private val gameRepo: GameRepo) : ViewModel() {
     private fun loadTeams() {
         _uiState.value = TeamListUiState.Loading()
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             gameRepo.fetchGames()
                 .catch { exception ->
                     _uiState.value = TeamListUiState.Error(message = exception.toString())

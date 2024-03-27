@@ -1,16 +1,21 @@
 package net.schnall.compose.repo
 
 import kotlinx.coroutines.flow.flow
-import net.schnall.compose.data.Game
+import net.schnall.compose.data.dao.GameDao
 import net.schnall.compose.network.GameService
 
-class GameRepoImpl(private val gameService: GameService): GameRepo {
-    private var games: List<Game> = emptyList()
+class GameRepoImpl(
+    private val gameDao: GameDao,
+    private val gameService: GameService
+): GameRepo {
+    override suspend fun fetchGames() = flow {
+        var games = gameDao.getAll()
 
-    override fun fetchGames() = flow {
         if (games.isEmpty()) {
             games = gameService.games()
+            gameDao.insertAll(*games.toTypedArray())
         }
+
         emit(games)
     }
 }
