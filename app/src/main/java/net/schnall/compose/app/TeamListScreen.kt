@@ -148,33 +148,41 @@ fun TeamListItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = bgColor)
-            .clickable(enabled = clickable) { onClick() }
-            .padding(16.dp),
+            .clickable(enabled = clickable) { onClick() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier
+                .padding(16.dp)
                 .weight(1f),
             text = name,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )
         Text(
-            modifier = Modifier.defaultMinSize(minWidth = 20.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .defaultMinSize(minWidth = 20.dp),
             text = wins,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )
         Text(
-            modifier = Modifier.defaultMinSize(minWidth = 20.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .defaultMinSize(minWidth = 20.dp),
             text = losses,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )
         Text(
-            modifier = Modifier.defaultMinSize(minWidth = 20.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .defaultMinSize(minWidth = 20.dp),
             text = draws,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )
         Text(
-            modifier = Modifier.defaultMinSize(minWidth = 40.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .defaultMinSize(minWidth = 40.dp),
             text = winPercentage,
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
         )

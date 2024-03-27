@@ -19,7 +19,7 @@ class TeamListViewModel(private val gameRepo: GameRepo) : ViewModel() {
         loadTeams()
     }
 
-    fun loadTeams() {
+    private fun loadTeams() {
         _uiState.value = TeamListUiState.Loading()
 
         viewModelScope.launch {
