@@ -33,27 +33,27 @@ import java.text.DecimalFormat
 
 @Composable
 fun TeamListScreen(
+    uiState: TeamListUiState,
     viewModel: TeamListViewModel = koinViewModel(),
     onTeamClick: (String, String) -> Unit
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    when(uiState.value) {
+    when(uiState) {
         is TeamListUiState.Success -> {
             TeamList(
-                teams = (uiState.value as TeamListUiState.Success).teams,
+                teams = (uiState as TeamListUiState.Success).teams,
                 onTeamClick = onTeamClick
             )
         }
 
         is TeamListUiState.Error -> {
-            with (uiState.value as TeamListUiState.Error) {
+            with (uiState as TeamListUiState.Error) {
                 Text(text = message)
             }
         }
 
         is TeamListUiState.Loading -> {
-            with (uiState.value as TeamListUiState.Loading) {
+            with (uiState as TeamListUiState.Loading) {
                 if (showIndicator) {
                     MyProgress()
                 }

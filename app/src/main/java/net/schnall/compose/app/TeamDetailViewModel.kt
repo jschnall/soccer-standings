@@ -16,7 +16,7 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
     private val _uiState = MutableStateFlow<TeamDetailUiState>(TeamDetailUiState.Loading(true))
     val uiState = _uiState.asStateFlow()
 
-    private val order = Order(field = OrderField.WINS, isDescending = true)
+    private val sort = Sort(field = SortField.WINS, isDescending = true)
 
     fun loadTeams(teamId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -25,55 +25,59 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
                     _uiState.value = TeamDetailUiState.Error(message = exception.toString())
                 }
                 .collect { games ->
-                    _uiState.value = TeamDetailUiState.Success(teams = buildTeamDetailItems(games, teamId))
+                    _uiState.value = TeamDetailUiState.Success(
+                        teams = buildTeamDetailItems(games, teamId),
+                        sort.field,
+                        sort.isDescending
+                    )
                 }
         }
     }
 
-    fun updateOrder(orderField: OrderField) {
-        if (order.field == orderField) {
-            order.isDescending = !order.isDescending
+    fun updateSort(sortField: SortField) {
+        if (sort.field == sortField) {
+            sort.isDescending = !sort.isDescending
         } else {
-            order.field = orderField
+            sort.field = sortField
         }
 
         _uiState.update { TeamDetailUiState.Loading(false) }
     }
 
-    private fun reorder(teams: List<TeamDetailItem>): List<TeamDetailItem> {
-            return if (order.isDescending) {
-                 when (order.field) {
-                    OrderField.NAME -> {
+    private fun sort(teams: List<TeamDetailItem>): List<TeamDetailItem> {
+            return if (sort.isDescending) {
+                 when (sort.field) {
+                    SortField.NAME -> {
                         teams.sortedByDescending { it.teamName }
                     }
-                    OrderField.WINS -> {
+                    SortField.WINS -> {
                         teams.sortedByDescending { it.winsAgainst }
                     }
-                    OrderField.LOSSES -> {
+                    SortField.LOSSES -> {
                         teams.sortedByDescending { it.lossesAgainst }
                     }
-                    OrderField.DRAWS -> {
+                    SortField.DRAWS -> {
                         teams.sortedByDescending { it.drawsAgainst }
                     }
-                    OrderField.GAMES -> {
+                    SortField.GAMES -> {
                         teams.sortedByDescending { it.totalGames }
                     }
                 }
             } else {
-                when (order.field) {
-                    OrderField.NAME -> {
+                when (sort.field) {
+                    SortField.NAME -> {
                         teams.sortedBy { it.teamName }
                     }
-                    OrderField.WINS -> {
+                    SortField.WINS -> {
                         teams.sortedBy { it.winsAgainst }
                     }
-                    OrderField.LOSSES -> {
+                    SortField.LOSSES -> {
                         teams.sortedBy { it.lossesAgainst }
                     }
-                    OrderField.DRAWS -> {
+                    SortField.DRAWS -> {
                         teams.sortedBy { it.drawsAgainst }
                     }
-                    OrderField.GAMES -> {
+                    SortField.GAMES -> {
                         teams.sortedBy { it.totalGames }
                     }
                 }
@@ -96,18 +100,18 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
                 )
             }
 
-        return reorder(items)
+        return sort(items)
     }
 }
 
-enum class OrderField {
+enum class SortField {
     NAME, WINS, LOSSES, DRAWS, GAMES
 }
 
-data class Order(var field: OrderField, var isDescending: Boolean)
+data class Sort(var field: SortField, var isDescending: Boolean)
 
 sealed class TeamDetailUiState {
-    data class Success(val teams: List<TeamDetailItem>): TeamDetailUiState()
+    data class Success(val teams: List<TeamDetailItem>, val sortField: SortField, val isDescending: Boolean): TeamDetailUiState()
     data class Error(val message: String): TeamDetailUiState()
     data class Loading(val showIndicator: Boolean = false) : TeamDetailUiState()
 }

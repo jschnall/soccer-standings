@@ -16,4 +16,8 @@
     <string name="team_detail_header_losses">L</string>
     <string name="team_detail_header_draws">D</string>
     <string name="team_detail_header_total_games">T</string>
+
+    <string name="descending">Descending</string>
+    <string name="ascending">Ascending</string>
+
 </resources>

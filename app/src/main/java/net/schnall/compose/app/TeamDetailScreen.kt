@@ -1,6 +1,7 @@
 package net.schnall.compose.app
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -14,40 +15,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.schnall.compose.R
 import net.schnall.compose.data.TeamDetailItem
 import net.schnall.compose.theme.ComposeStarterTheme
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TeamDetailScreen(
     teamId: String,
-    viewModel: TeamDetailViewModel = koinViewModel(),
-    onSort: (OrderField) -> Unit
+    uiState: TeamDetailUiState,
+    onSort: (SortField) -> Unit,
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    viewModel.loadTeams(teamId)
-
-    when(uiState.value) {
+    when(uiState) {
         is TeamDetailUiState.Success -> {
+            val state = (uiState as TeamDetailUiState.Success)
+
             TeamDetails(
-                teams = (uiState.value as TeamDetailUiState.Success).teams,
-                onSort = onSort
+                teams = state.teams,
+                onSort = onSort,
+                sortField = state.sortField,
+                isDescending = state.isDescending
             )
         }
 
         is TeamDetailUiState.Error -> {
-            with (uiState.value as TeamDetailUiState.Error) {
+            with (uiState as TeamDetailUiState.Error) {
                 Text(text = message)
             }
         }
 
         is TeamDetailUiState.Loading -> {
-            with (uiState.value as TeamDetailUiState.Loading) {
+            with (uiState as TeamDetailUiState.Loading) {
                 if (showIndicator) {
                     MyProgress()
                 }
@@ -60,11 +61,17 @@ fun TeamDetailScreen(
 @Composable
 fun TeamDetails(
     teams: List<TeamDetailItem>,
-    onSort: (OrderField) -> Unit
+    onSort: (SortField) -> Unit,
+    sortField: SortField,
+    isDescending : Boolean
 ) {
     LazyColumn {
         stickyHeader {
-            TeamDetailHeader(onSort = onSort)
+            TeamDetailHeader(
+                onSort = onSort,
+                sortField = sortField,
+                isDescending = isDescending
+            )
         }
         items(items = teams) { team ->
             TeamDetailListItem(
@@ -76,7 +83,9 @@ fun TeamDetails(
 
 @Composable
 fun TeamDetailHeader(
-    onSort: (OrderField) -> Unit
+    onSort: (SortField) -> Unit,
+    sortField: SortField,
+    isDescending : Boolean
 ) {
 
     TeamDetailListItem(
@@ -87,7 +96,9 @@ fun TeamDetailHeader(
         totalGames = stringResource(id = R.string.team_detail_header_total_games),
         bgColor = Color.Gray,
         clickable = true,
-        onClick = onSort
+        onClick = onSort,
+        sortField = sortField,
+        isDescending = isDescending
     )
 }
 
@@ -115,54 +126,89 @@ fun TeamDetailListItem(
     modifier: Modifier = Modifier,
     bgColor: Color = Color.LightGray,
     clickable: Boolean = false,
-    onClick: (OrderField) -> Unit = {}
+    onClick: (SortField) -> Unit = {},
+    sortField: SortField? = null,
+    isDescending : Boolean = false
 ) {
+    val resId = if (isDescending) R.drawable.south else R.drawable.north
+    val description = if (isDescending) R.string.descending else R.string.ascending
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = bgColor),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        TeamDetailsCell(
             modifier = Modifier
-                .clickable(enabled = clickable) { onClick(OrderField.NAME) }
+                .clickable(enabled = clickable) { onClick(SortField.NAME) }
                 .padding(16.dp)
                 .weight(1f),
             text = name,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            iconResId = if (sortField == SortField.NAME) resId else null,
+            description = description
         )
-        Text(
+        TeamDetailsCell(
             modifier = Modifier
-                .clickable(enabled = clickable) { onClick(OrderField.WINS) }
+                .clickable(enabled = clickable) { onClick(SortField.WINS) }
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = winsAgainst,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            iconResId = if (sortField == SortField.WINS) resId else null,
+            description = description
         )
-        Text(
+        TeamDetailsCell(
             modifier = Modifier
-                .clickable(enabled = clickable) { onClick(OrderField.LOSSES) }
+                .clickable(enabled = clickable) { onClick(SortField.LOSSES) }
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = lossesAgainst,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            iconResId = if (sortField == SortField.LOSSES) resId else null,
+            description = description
         )
-        Text(
+        TeamDetailsCell(
             modifier = Modifier
-                .clickable(enabled = clickable) { onClick(OrderField.DRAWS) }
+                .clickable(enabled = clickable) { onClick(SortField.DRAWS) }
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = drawsAgainst,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            iconResId = if (sortField == SortField.DRAWS) resId else null,
+            description = description
         )
-        Text(
+        TeamDetailsCell(
             modifier = Modifier
-                .clickable(enabled = clickable) { onClick(OrderField.GAMES) }
+                .clickable(enabled = clickable) { onClick(SortField.GAMES) }
                 .padding(16.dp)
                 .defaultMinSize(minWidth = 20.dp),
             text = totalGames,
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            iconResId = if (sortField == SortField.GAMES) resId else null,
+            description = description
         )
+    }
+}
+
+@Composable
+fun TeamDetailsCell(
+    modifier: Modifier,
+    text: String,
+    iconResId: Int? = null,
+    description: Int? = null
+) {
+    Row(
+        modifier = modifier
+    ) {
+        Text(
+            modifier = Modifier,
+            text = text,
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+        )
+        iconResId?.let {
+            Image(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                painter = painterResource(id = iconResId),
+                contentDescription = if (description == null) null else stringResource(id = description)
+            )
+        }
     }
 }
 
@@ -175,7 +221,9 @@ fun TeamDetailsPreview() {
                 TeamDetailItem("0", "Real Madrid", 1, 1, 0, 10),
                 TeamDetailItem("1", "Arsenal", 2,0, 0, 6),
             ),
-            onSort = {}
+            onSort = {},
+            sortField = SortField.WINS,
+            isDescending = true
         )
     }
 }

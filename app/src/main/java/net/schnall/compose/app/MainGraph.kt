@@ -2,6 +2,7 @@ package net.schnall.compose.app
 
 import androidx.annotation.StringRes
 import androidx.compose.material3.SnackbarDuration
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -41,8 +42,11 @@ fun NavGraphBuilder.mainGraph(
 ) {
     navigation(startDestination = NavScreen.TeamList.route, route = NavGraph.Main.route) {
         composable(NavScreen.TeamList.route) { backStackEntry ->
+            val viewModel: TeamListViewModel = koinViewModel()
+            val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
             TeamListScreen(
-                viewModel = koinViewModel(),
+                uiState = uiState.value,
                 onTeamClick = { teamId, teamName ->
                     navController.navigateToTeamDetails(teamId)
                     updateScreenName(teamName)
@@ -56,11 +60,13 @@ fun NavGraphBuilder.mainGraph(
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("teamId")?.let { teamId ->
                 val viewModel: TeamDetailViewModel = koinViewModel()
+                val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+                viewModel.loadTeams(teamId)
 
                 TeamDetailScreen(
                     teamId = teamId,
-                    viewModel = viewModel,
-                    onSort = { order -> viewModel.updateOrder(order) }
+                    uiState = uiState.value,
+                    onSort = { sort -> viewModel.updateSort(sort) }
                 )
             }
         }
