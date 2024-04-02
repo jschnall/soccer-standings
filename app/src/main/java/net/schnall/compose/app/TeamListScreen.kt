@@ -137,7 +137,7 @@ fun TeamListItem(
     winPercentage: String,
     onClick: () -> Unit = {},
     clickable: Boolean = true,
-    bgColor: Color = Color.LightGray
+    bgColor: Color = Color.Transparent
 ) {
     Row(
         modifier = Modifier

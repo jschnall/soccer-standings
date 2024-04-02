@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -119,7 +120,7 @@ fun TeamDetailListItem(
     lossesAgainst: String,
     drawsAgainst: String,
     totalGames: String,
-    bgColor: Color = Color.LightGray,
+    bgColor: Color = Color.Transparent,
     clickable: Boolean = false,
     onClick: (SortField) -> Unit = {},
     sortField: SortField? = null,
@@ -198,7 +199,7 @@ fun TeamDetailsCell(
             style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
         )
         iconResId?.let {
-            Image(
+            Icon(
                 modifier = Modifier.padding(horizontal = 4.dp),
                 painter = painterResource(id = iconResId),
                 contentDescription = if (description == null) null else stringResource(id = description)
