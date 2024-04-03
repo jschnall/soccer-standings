@@ -15,6 +15,13 @@ interface GameDao {
     @Delete
     suspend fun delete(user: Game)
 
-    @Query("SELECT * FROM game")
+    @Query("DELETE FROM $TABLE_NAME")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM $TABLE_NAME")
     fun getAll(): Flow<List<Game>>
+
+    companion object {
+        const val TABLE_NAME = "game"
+    }
 }

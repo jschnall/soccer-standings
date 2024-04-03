@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import net.schnall.compose.app.theme.ComposeStarterTheme
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.KoinContext
 
 @Composable
 fun MyApp(
@@ -65,15 +66,19 @@ fun MyApp(
 @Preview(showSystemUi = false, device = Devices.NEXUS_6, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun MyAppPreview() {
-    ComposeStarterTheme {
-        MyApp(exitApp = {})
+    KoinContext {
+        ComposeStarterTheme {
+            MyApp(exitApp = {})
+        }
     }
 }
 
 @Preview(showSystemUi = false, device = Devices.NEXUS_6, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MyAppNightPreview() {
-    ComposeStarterTheme {
-        MyApp(exitApp = {})
+    KoinContext {
+        ComposeStarterTheme {
+            MyApp(exitApp = {})
+        }
     }
 }

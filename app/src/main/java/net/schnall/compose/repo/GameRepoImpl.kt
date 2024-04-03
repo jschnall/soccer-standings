@@ -15,6 +15,7 @@ class GameRepoImpl(
     override fun fetchGames(forceRefresh: Boolean) = flow {
         if (forceRefresh || cacheHelper.isExpired(CACHE_KEY)) {
             gameApi.fetchGames().flowOn(Dispatchers.IO).collect { games ->
+                gameDao.deleteAll()
                 gameDao.upsertAll(*games.toTypedArray())
                 cacheHelper.updateFetchTime(CACHE_KEY)
                 emit(games)
