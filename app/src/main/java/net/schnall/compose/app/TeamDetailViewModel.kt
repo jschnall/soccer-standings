@@ -2,7 +2,6 @@ package net.schnall.compose.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import net.schnall.compose.repo.GameRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,13 +12,13 @@ import net.schnall.compose.data.Game
 import net.schnall.compose.data.TeamDetailItem
 
 class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
-    private val _uiState = MutableStateFlow<TeamDetailUiState>(TeamDetailUiState.Loading(true))
+    private val _uiState = MutableStateFlow<TeamDetailUiState>(TeamDetailUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     private val sort = Sort(field = SortField.WINS, isDescending = true)
 
     fun loadTeams(teamId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             gameRepo.fetchGames()
                 .catch { exception ->
                     _uiState.value = TeamDetailUiState.Error(message = exception.toString())
@@ -41,7 +40,7 @@ class TeamDetailViewModel(private val gameRepo: GameRepo) : ViewModel() {
             sort.field = sortField
         }
 
-        _uiState.update { TeamDetailUiState.Loading(false) }
+        _uiState.update { TeamDetailUiState.Loading }
     }
 
     private fun sort(teams: List<TeamDetailItem>): List<TeamDetailItem> {
@@ -113,5 +112,5 @@ data class Sort(var field: SortField, var isDescending: Boolean)
 sealed class TeamDetailUiState {
     data class Success(val teams: List<TeamDetailItem>, val sortField: SortField, val isDescending: Boolean): TeamDetailUiState()
     data class Error(val message: String): TeamDetailUiState()
-    data class Loading(val showIndicator: Boolean = false) : TeamDetailUiState()
+    data object Loading : TeamDetailUiState()
 }

@@ -2,7 +2,6 @@ package net.schnall.compose.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import net.schnall.compose.repo.GameRepo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +11,7 @@ import net.schnall.compose.data.Game
 import net.schnall.compose.data.TeamItem
 
 class TeamListViewModel(private val gameRepo: GameRepo) : ViewModel() {
-    private val _uiState = MutableStateFlow<TeamListUiState>(TeamListUiState.Loading(true))
+    private val _uiState = MutableStateFlow<TeamListUiState>(TeamListUiState.Loading)
     val uiState: StateFlow<TeamListUiState>
         get() = _uiState
 
@@ -20,16 +19,20 @@ class TeamListViewModel(private val gameRepo: GameRepo) : ViewModel() {
         loadTeams()
     }
 
-    private fun loadTeams() {
-        _uiState.value = TeamListUiState.Loading()
+    fun loadTeams(forceRefresh: Boolean = false) {
+        _uiState.value = if (uiState.value is TeamListUiState.Success) {
+            (uiState.value as TeamListUiState.Success).copy(refreshing = true)
+        } else {
+            TeamListUiState.Loading
+        }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            gameRepo.fetchGames()
+        viewModelScope.launch {
+            gameRepo.fetchGames(forceRefresh)
                 .catch { exception ->
                     _uiState.value = TeamListUiState.Error(message = exception.toString())
                 }
                 .collect { games ->
-                    _uiState.value = TeamListUiState.Success(teams = buildTeamItems(games))
+                    _uiState.value = TeamListUiState.Success(teams = buildTeamItems(games), refreshing = false)
                 }
         }
     }
@@ -75,7 +78,7 @@ class TeamListViewModel(private val gameRepo: GameRepo) : ViewModel() {
 }
 
 sealed class TeamListUiState {
-    data class Success(val teams: List<TeamItem>): TeamListUiState()
+    data class Success(val teams: List<TeamItem>, val refreshing: Boolean): TeamListUiState()
     data class Error(val message: String): TeamListUiState()
-    data class Loading(val showIndicator: Boolean = false) : TeamListUiState()
+    data object Loading : TeamListUiState()
 }

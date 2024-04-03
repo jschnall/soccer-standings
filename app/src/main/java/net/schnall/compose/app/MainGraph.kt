@@ -50,6 +50,8 @@ fun NavGraphBuilder.mainGraph(
                     navController.navigateToTeamDetails(teamId)
                     updateScreenName(teamName)
                 },
+                showSnackbar,
+                onRefresh = { viewModel.loadTeams(true) }
             )
         }
 
@@ -64,7 +66,8 @@ fun NavGraphBuilder.mainGraph(
 
                 TeamDetailScreen(
                     uiState = uiState.value,
-                    onSort = { sort -> viewModel.updateSort(sort) }
+                    onSort = { sort -> viewModel.updateSort(sort) },
+                    showSnackbar
                 )
             }
         }

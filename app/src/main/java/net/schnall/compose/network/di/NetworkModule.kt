@@ -3,6 +3,8 @@ package net.schnall.compose.network.di
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import net.schnall.compose.BuildConfig
+import net.schnall.compose.network.GameApi
+import net.schnall.compose.network.GameApiImpl
 import net.schnall.compose.network.GameService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -14,6 +16,8 @@ import java.util.concurrent.TimeUnit
 private const val BASE_URL = "https://s.yimg.com/"
 
 fun networkModule() = module {
+    single<GameApi> { GameApiImpl(get()) }
+
     single<GameService> {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

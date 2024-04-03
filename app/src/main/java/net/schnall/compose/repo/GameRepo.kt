@@ -4,5 +4,5 @@ import net.schnall.compose.data.Game
 import kotlinx.coroutines.flow.Flow
 
 interface GameRepo {
-    suspend fun fetchGames(): Flow<List<Game>>
+    fun fetchGames(forceRefresh: Boolean = false): Flow<List<Game>>
 }

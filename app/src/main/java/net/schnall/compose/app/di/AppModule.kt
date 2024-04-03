@@ -9,6 +9,7 @@ import org.koin.dsl.module
 
 fun appModule() = module {
     includes(repoModule)
+
     viewModel { AppViewModel() }
     viewModel { TeamListViewModel(get()) }
     viewModel { TeamDetailViewModel(get()) }
