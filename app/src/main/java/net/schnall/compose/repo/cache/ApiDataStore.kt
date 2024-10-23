@@ -28,9 +28,9 @@ class ApiDatastoreImpl(context: Context): ApiDataStore {
 
     override suspend fun <T> getPreference(key: Preferences.Key<T>, defaultValue: T):
             Flow<T> = dataSource.data.catch { exception ->
-        if (exception is IOException){
+        if (exception is IOException) {
             emit(emptyPreferences())
-        }else{
+        } else{
             throw exception
         }
     }.map { preferences->
@@ -38,11 +38,11 @@ class ApiDatastoreImpl(context: Context): ApiDataStore {
         result
     }
 
-    override suspend fun <T> getFirstPreference(key: Preferences.Key<T>, defaultValue: T) :
+    override suspend fun <T> getFirstPreference(key: Preferences.Key<T>, defaultValue: T):
             T = dataSource.data.first()[key] ?: defaultValue
 
     override suspend fun <T> putPreference(key: Preferences.Key<T>, value: T) {
-        dataSource.edit {   preferences ->
+        dataSource.edit { preferences ->
             preferences[key] = value
         }
     }
